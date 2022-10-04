@@ -1,0 +1,99 @@
+{% import "bootstrap/wtf.html" as wtf %}
+{% extends "bootstrap/base.html" %}
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+<link rel="stylesheet" href="{{url_for('.static', filename='css/style.css')}}">
+<link rel="shortcut icon" type="image/x-icon" href="{{url_for('.static', filename='img/miniLogo.png')}}" />
+{% endblock %}
+{% block navbar %}
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="/">
+        <img src="/static/img/navbarlogo.png" width="120" height="30" alt="">
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            {% if user.is_active %}
+            {% for buttongroup in user.get_navbarbuttons() %}
+            {% if user.get_navbarbuttons()[buttongroup]|length > 1 and buttongroup != 'NoCat' %}
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+                   aria-haspopup="true" aria-expanded="false">
+                    {{buttongroup}}
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    {% for button in user.get_navbarbuttons()[buttongroup] %}
+                    <a class="dropdown-item" target={{button['new_tab']}} href={{button['href']}}>{{button['name']}}</a>
+                    {% endfor %}
+                </div>
+            </li>
+            {% else %}
+            {% for button in user.get_navbarbuttons()[buttongroup] %}
+            <a class="nav-link" target={{button['new_tab']}}
+               href={{button['href']}}>{{button['name']}}
+                <span class="sr-only"></span></a>
+            {% endfor %}
+            {% endif %}
+            {% endfor %}
+            {% endif %}
+        </ul>
+
+
+        {% if user.is_active %}
+
+
+
+
+
+
+
+        <div class="nav-item dropdown">
+            <a class="btn btn-outline-warning my-2 my-sm-0" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown"
+               aria-haspopup="true" aria-expanded="false">
+                {{user.first_name}} {{user.last_name}}
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" style="right:0; left:auto">
+                <a class="dropdown-item" href="/account">Account</a>
+                <a class="dropdown-item" href="/logout">Logout</a>
+            </div>
+
+
+            {% elif "/login" == url_for(request.endpoint) %}
+            {% else %}
+            <form class="form-inline my-2 my-lg-0" method="POST" action="/login">
+                {{ form.email(class='form-control', placeholder='email', style='margin-right:5px') }}
+                {{ form.password(class='form-control', placeholder='password', style='margin-right:5px') }}
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit" style="margin-right:5px">Login
+                </button>
+                <a class="btn btn-outline-info" href="/signup">Sign up</a>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<br>
+{% for category, message in messages %}
+<div class="{{ category }}" role="alert">
+    {{ message }}
+</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+{% endblock %}
+
+{% block scripts %}
+{{ super() }} {# to load the parent assets #}
+<script src="static/js/checks_script.js"></script>
+{% endblock %}
+
+
