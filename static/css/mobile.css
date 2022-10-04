@@ -1,0 +1,18 @@
+button[name=action] {
+    color: #fff;
+    width: 49%;
+    max-width: 200px;
+    /* align-items: center; */
+    height: 100px;
+}
+
+
+#startbn {
+    background-color: green;
+    border-radius: 15px;
+}
+
+#stopbn {
+    background-color: red;
+    border-radius: 15px;
+}

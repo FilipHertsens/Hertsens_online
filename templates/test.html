@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    <title>Time registration</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{url_for('.static', filename='css/mobile.css')}}">
+  </head>
+  <body>
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="http://www.hertsens.eu" style="margin-left:15px">
+        <img src="/static/img/navbarlogo.png" width="120" height="30" alt="">
+    </a>
+</nav>
+<div class="container" style="width: 97%; max-width: 450px; margin: auto">
+<br>
+<h3 id="name"></h3>
+    <div id="validateDiv">
+        <div class="form-group">
+            <label for="phone">Phone number</label>
+            <input type="number" id="phone" name="phone" required value="0032">
+        </div>
+        <small id="emailHelp" class="form-text text-muted">Enter your phone number to identify yourself.</small>
+        <br>
+        <button onclick="check_user()" class="btn btn-primary" style="margin-top:10px">Submit</button>
+    </div>
+
+    <div  id="regDiv">
+    <form>
+
+    <div class="form-group">
+            <label for="remak">Remaks</label>
+            <textarea class="form-control" id="remak" name="remark" rows="5"></textarea>
+        </div>
+        <input hidden name="lat" value="0.0000">
+        <input hidden name="lat" value="0.0000">
+        <input hidden type="datetime-local" id="meeting-time" name="time">
+        <br>
+        </form>
+        <button onclick="submitContact(this)" id="startbn" name="action" value="start">start</button>
+        <button onclick="submitContact(this)" id="stopbn" name="action" value="stop">stop</button>
+        </div>
+</div>
+
+
+<p id="demo"></p>
+<script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+<script>
+var x = document.getElementById("demo");
+var phone = document.getElementById("phone");
+var name_field = document.getElementById("name");
+var validateDiv = document.getElementById("validateDiv");
+var regDiv = document.getElementById("regDiv");
+
+
+let name = localStorage.getItem("name");
+let error = localStorage.getItem("error");
+console.log(name)
+
+if (name != null){
+    name_field.innerHTML = name;
+    validateDiv.style.display = 'none';
+    regDiv.style.display = 'block';
+} else {
+    name_field.innerHTML = '';
+    validateDiv.style.display = 'block';
+    regDiv.style.display = 'none';
+
+}
+
+
+
+function getLocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(showPosition,showError);
+  } else {
+    x.innerHTML = "Geolocation is not supported by this browser.";
+  }
+}
+
+function showPosition(position) {
+    console.log("Latitude: " + position.coords.latitude + "<br>Longitude: " + position.coords.longitude)
+}
+
+function showError(error) {
+  switch(error.code) {
+    case error.PERMISSION_DENIED:
+      x.innerHTML = "User denied the request for Geolocation."
+      break;
+    case error.POSITION_UNAVAILABLE:
+      x.innerHTML = "Location information is unavailable."
+      break;
+    case error.TIMEOUT:
+      x.innerHTML = "The request to get user location timed out."
+      break;
+    case error.UNKNOWN_ERROR:
+      x.innerHTML = "An unknown error occurred."
+      break;
+  }
+}
+
+function check_user(){
+    $.ajax(
+        {
+            type:'GET',
+            url:'https://10.0.0.69:5000/data/getUser',
+            // data: JSON.stringify({'phone':'phone.value'}),
+            // contentType: 'application/json;charset=UTF-8',
+            success: function(data){
+                if (data['valid']){
+                    name_field.innerHTML = data['name'];
+                    localStorage.setItem("name", data['name']);
+                    localStorage.setItem("employee_id", data['id']);
+                    validateDiv.style.display = 'none';
+                    regDiv.style.display = 'block';
+
+                }
+                else{
+                    x.innerHTML = 'fail'
+                }
+            }
+        }
+     );
+
+
+}
+
+
+function submitContact(ele){
+    getLocation()
+
+}
+
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+
+</body>
+</html>
